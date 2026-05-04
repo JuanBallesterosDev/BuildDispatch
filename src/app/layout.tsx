@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "FieldOps AI",
-  description: "A multi-tenant field service platform for jobs, technicians, inventory, and service reports.",
+  description: "A multi-tenant field service platform for HVAC contractors and small construction service companies",
 };
 
 export default function RootLayout({

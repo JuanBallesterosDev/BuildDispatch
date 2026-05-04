@@ -1,10 +1,12 @@
 # FieldOps AI
 
-FieldOps AI is a multi-tenant SaaS platform for small field service companies that need to manage clients, technicians, jobs, inventory, and service reports from one web and mobile-friendly application.
+FieldOps AI is a multi-tenant SaaS operations platform for HVAC contractors and small construction service companies. It helps office teams and field crews manage work orders, job sites, material usage, photo evidence, and client-ready service reports from one web and mobile-friendly application.
 
 ## Problem
 
-Many small service companies coordinate field work through phone calls, spreadsheets, and messaging apps. This creates scattered job history, weak inventory visibility, slow reporting, and limited accountability between dispatchers, technicians, and administrators.
+Small HVAC and construction service companies often coordinate field work through phone calls, spreadsheets, text messages, and scattered photos. This creates slow dispatching, incomplete job history, weak material tracking, and delayed client reporting.
+
+FieldOps AI focuses on one core operational problem: crews complete work in the field, but the office does not receive clean, structured, report-ready information fast enough.
 
 ## Goal
 
@@ -35,11 +37,11 @@ The goal of FieldOps AI is to provide a production-style SaaS application that d
 
 - Organization onboarding
 - User roles and memberships
-- Client management
-- Technician management
-- Job creation and assignment
-- Technician mobile workflow
-- Inventory usage tracking
+- Client and job site management
+- Work order creation and assignment
+- Technician / crew mobile workflow
+- Field notes and photo evidence
+- Material usage tracking
 - PDF service report generation
 - Dashboard metrics
 - Audit logs
