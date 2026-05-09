@@ -1,28 +1,48 @@
-const workOrders = [
-  {
-    title: "Emergency furnace callback",
-    customer: "North York Community Centre",
-    assignedTo: "Unassigned",
-    status: "Needs attention",
-    statusClass: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
-  },
-  {
-    title: "Rooftop unit inspection",
-    customer: "Maple Plaza - Building A",
-    assignedTo: "Maria Gomez",
-    status: "In progress",
-    statusClass: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-  },
-  {
-    title: "Basement framing walkthrough",
-    customer: "Riverbend Townhomes",
-    assignedTo: "Build Crew 1",
-    status: "Scheduled",
-    statusClass: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
-  },
-];
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      slug: "northline-mechanical-build",
+    },
+    include: {
+      workOrders: {
+        include: {
+          client: true,
+          assignments: {
+            include: {
+              user: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 3,
+      },
+      materials: {
+        orderBy: {
+          quantityOnHand: "asc",
+        },
+        take: 1,
+      },
+    },  
+  });
+
+  if(!organization){
+    return(
+      <main className="min-h-screen bg-slate-50 p-6 text-slate-950">
+        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <h1 className="text-2xl font-semibold">Demo data not found</h1>
+          <p className="mt-2 text-slate-600">
+            Run<code className="rounded bg-slate-100 px-1">npm run db:seed</code>{" "}
+            to create the BuildDispatch demo workspace.
+          </p>
+        </section>
+      </main>
+    )
+  }
+  
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -33,7 +53,7 @@ export default function Home() {
                 BuildDispatch
               </p>
               <h1 className="mt-2 text-2xl font-semibold text-slate-950">
-                Northline Mechanical & Build
+                {organization.name}
               </h1>
               <p className="mt-1 text-sm text-slate-500">
                 HVAC and construction work orders for today.
@@ -91,33 +111,38 @@ export default function Home() {
             </div>
 
             <div className="divide-y divide-slate-100">
-              {workOrders.map((order) => (
-                <article
-                  className="flex flex-col gap-4 p-5 hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
-                  key={order.title}
-                >
-                  <div>
-                    <h3 className="font-semibold text-slate-950">
-                      {order.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {order.customer}
-                    </p>
-                    <p className="mt-2 text-sm text-slate-600">
-                      Assigned to:{" "}
-                      <span className="font-medium text-slate-900">
-                        {order.assignedTo}
-                      </span>
-                    </p>
-                  </div>
+              {organization.workOrders.map((order) => {
+                const assignedTo = order.assignments.map((assignment) => assignment.user.name).join(", ") || "Unassigned";
 
-                  <span
-                    className={`w-fit rounded-md px-3 py-1 text-sm font-medium ${order.statusClass}`}
+                return(
+                  <article
+                  className="flex flex-col gap-4 p-5 hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
+                  key={order.id}
                   >
-                    {order.status}
-                  </span>
-                </article>
-              ))}
+                    <div>
+                      <h3 className="font-semibold text-slate-950">
+                        {order.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {order.client.name}
+                      </p>
+                      <p className="mt-2 text-sm text-slate-600">
+                        Assigned to:{" "}
+                        <span className="font-medium text-slate-900">
+                          {assignedTo}
+                        </span>
+                      </p>
+                    </div>
+
+                    <span
+                      className="w-fit rounded-md px-3 py-1 text-sm font-medium"
+                    >
+                      {order.status.replaceAll("_", " ")}
+                    </span>
+                  </article>
+                )
+              })}
+                
             </div>
           </div>
 
@@ -141,7 +166,8 @@ export default function Home() {
 
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
               <h2 className="text-lg font-semibold text-amber-950">
-                Material alert
+                {organization.materials[0]?.name ?? "No material alerts"} is low. Current
+                stock: {organization.materials[0]?.quantityOnHand ?? 0}.
               </h2>
               <p className="mt-2 text-sm text-amber-800">
                 MERV 13 filters are low. Two scheduled HVAC jobs may need them
