@@ -10,7 +10,14 @@ const adapter = new PrismaBetterSqlite3({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const passwordHash = await bcrypt.hash("Demo123!", 12);
+  const demoPassword = process.env.SEED_DEMO_PASSWORD;
+
+  if (!demoPassword) {
+    throw new Error("SEED_DEMO_PASSWORD is required to seed demo users.");
+  }
+
+  const passwordHash = await bcrypt.hash(demoPassword, 12);
+
   await prisma.auditLog.deleteMany();
   await prisma.serviceReport.deleteMany();
   await prisma.photoEvidence.deleteMany();

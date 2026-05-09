@@ -46,6 +46,20 @@ The goal of BuildDispatch is to provide a production-style SaaS application that
 - Dashboard metrics
 - Audit logs
 
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="file:./dev.db"
+SEED_DEMO_PASSWORD="your-demo-password"
+```
+
+`DATABASE_URL` points Prisma to the local SQLite database.
+
+`SEED_DEMO_PASSWORD` is used only when generating local demo users with `npm run db:seed`. Do not commit real passwords or production secrets.
+
+
 ## Development
 
 Install dependencies:
@@ -63,10 +77,21 @@ Run linting:
 ```bash
 npm run lint
 ```
+Seed the local demo database:
+
+```bash
+npm run db:seed
+```
+
 
 Open the app:
+```text
 http://localhost:3000
+```
 
-Project Status
+
+## Project Status
+
 Foundation in progress.
+
 
