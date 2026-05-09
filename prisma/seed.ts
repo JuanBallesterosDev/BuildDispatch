@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient, Priority, Role, WorkOrderStatus } from "../src/generated/prisma/client";
+import bcrypt from "bcryptjs";
 
 const adapter = new PrismaBetterSqlite3({
   url: process.env.DATABASE_URL ?? "file:./dev.db",
@@ -9,6 +10,7 @@ const adapter = new PrismaBetterSqlite3({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  const passwordHash = await bcrypt.hash("Demo123!", 12);
   await prisma.auditLog.deleteMany();
   await prisma.serviceReport.deleteMany();
   await prisma.photoEvidence.deleteMany();
@@ -35,7 +37,7 @@ async function main() {
     data: {
       name: "Juan Ballesteros",
       email: "owner@builddispatch.dev",
-      passwordHash: "demo-password-hash",
+      passwordHash,
       memberships: {
         create: {
           organizationId: organization.id,
@@ -49,7 +51,7 @@ async function main() {
     data: {
       name: "Maria Gomez",
       email: "maria@builddispatch.dev",
-      passwordHash: "demo-password-hash",
+      passwordHash,
       memberships: {
         create: {
           organizationId: organization.id,
@@ -63,7 +65,7 @@ async function main() {
     data: {
       name: "Daniel Park",
       email: "daniel@builddispatch.dev",
-      passwordHash: "demo-password-hash",
+      passwordHash,
       memberships: {
         create: {
           organizationId: organization.id,
