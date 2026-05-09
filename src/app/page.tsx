@@ -4,47 +4,47 @@ const workOrders = [
     customer: "North York Community Centre",
     assignedTo: "Unassigned",
     status: "Needs attention",
-    statusClass: "bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/30",
+    statusClass: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
   },
   {
     title: "Rooftop unit inspection",
     customer: "Maple Plaza - Building A",
     assignedTo: "Maria Gomez",
     status: "In progress",
-    statusClass: "bg-sky-500/15 text-sky-200 ring-1 ring-sky-400/30",
+    statusClass: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
   },
   {
     title: "Basement framing walkthrough",
     customer: "Riverbend Townhomes",
     assignedTo: "Build Crew 1",
     status: "Scheduled",
-    statusClass: "bg-slate-700 text-slate-200 ring-1 ring-slate-500",
+    statusClass: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
   },
 ];
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-5 text-slate-100 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-50 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
-        <header className="mb-6 rounded-lg border border-white/10 bg-slate-900 p-5 shadow-2xl shadow-black/20">
+        <header className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">
                 FieldOps AI
               </p>
-              <h1 className="mt-2 text-2xl font-semibold text-white">
+              <h1 className="mt-2 text-2xl font-semibold text-slate-950">
                 Northline Mechanical & Build
               </h1>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-slate-500">
                 HVAC and construction work orders for today.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button className="rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300">
+              <button className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">
                 New work order
               </button>
-              <button className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-white/10">
+              <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                 Review reports
               </button>
             </div>
@@ -52,58 +52,60 @@ export default function Home() {
         </header>
 
         <section className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-lg border border-white/10 bg-slate-900 p-5">
-            <p className="text-sm font-medium text-slate-400">Open today</p>
-            <p className="mt-3 text-3xl font-semibold text-white">8</p>
-            <p className="mt-2 text-sm text-slate-400">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Open today</p>
+            <p className="mt-3 text-3xl font-semibold text-slate-950">8</p>
+            <p className="mt-2 text-sm text-slate-500">
               Work orders scheduled or waiting.
             </p>
           </div>
 
-          <div className="rounded-lg border border-white/10 bg-slate-900 p-5">
-            <p className="text-sm font-medium text-slate-400">In progress</p>
-            <p className="mt-3 text-3xl font-semibold text-white">3</p>
-            <p className="mt-2 text-sm text-slate-400">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">In progress</p>
+            <p className="mt-3 text-3xl font-semibold text-slate-950">3</p>
+            <p className="mt-2 text-sm text-slate-500">
               Crews currently on site.
             </p>
           </div>
 
-          <div className="rounded-lg border border-rose-400/20 bg-rose-500/10 p-5">
-            <p className="text-sm font-medium text-rose-200">
+          <div className="rounded-lg border border-rose-200 bg-rose-50 p-5 shadow-sm">
+            <p className="text-sm font-medium text-rose-700">
               Needs attention
             </p>
-            <p className="mt-3 text-3xl font-semibold text-white">2</p>
-            <p className="mt-2 text-sm text-rose-100/80">
+            <p className="mt-3 text-3xl font-semibold text-rose-950">2</p>
+            <p className="mt-2 text-sm text-rose-700">
               Unassigned urgent work or missing report details.
             </p>
           </div>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_340px]">
-          <div className="rounded-lg border border-white/10 bg-slate-900">
-            <div className="border-b border-white/10 p-5">
-              <h2 className="text-lg font-semibold text-white">
+          <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-200 p-5">
+              <h2 className="text-lg font-semibold text-slate-950">
                 Today&apos;s work
               </h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-slate-500">
                 Simple view of the jobs the office needs to manage right now.
               </p>
             </div>
 
-            <div className="divide-y divide-white/10">
+            <div className="divide-y divide-slate-100">
               {workOrders.map((order) => (
                 <article
-                  className="flex flex-col gap-4 p-5 hover:bg-white/[0.03] sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-4 p-5 hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
                   key={order.title}
                 >
                   <div>
-                    <h3 className="font-semibold text-white">{order.title}</h3>
-                    <p className="mt-1 text-sm text-slate-400">
+                    <h3 className="font-semibold text-slate-950">
+                      {order.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500">
                       {order.customer}
                     </p>
-                    <p className="mt-2 text-sm text-slate-300">
+                    <p className="mt-2 text-sm text-slate-600">
                       Assigned to:{" "}
-                      <span className="font-medium text-slate-100">
+                      <span className="font-medium text-slate-900">
                         {order.assignedTo}
                       </span>
                     </p>
@@ -120,36 +122,36 @@ export default function Home() {
           </div>
 
           <aside className="space-y-4">
-            <div className="rounded-lg border border-white/10 bg-slate-900 p-5">
-              <h2 className="text-lg font-semibold text-white">
+            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-slate-950">
                 Quick actions
               </h2>
               <div className="mt-4 grid gap-2">
-                <button className="rounded-md border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-slate-100 hover:bg-white/10">
+                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
                   Assign urgent work
                 </button>
-                <button className="rounded-md border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-slate-100 hover:bg-white/10">
+                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
                   Add material usage
                 </button>
-                <button className="rounded-md border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-slate-100 hover:bg-white/10">
+                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
                   Generate service report
                 </button>
               </div>
             </div>
 
-            <div className="rounded-lg border border-amber-300/20 bg-amber-400/10 p-5">
-              <h2 className="text-lg font-semibold text-amber-100">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-amber-950">
                 Material alert
               </h2>
-              <p className="mt-2 text-sm text-amber-100/80">
+              <p className="mt-2 text-sm text-amber-800">
                 MERV 13 filters are low. Two scheduled HVAC jobs may need them
                 this week.
               </p>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-slate-900 p-5">
-              <h2 className="text-lg font-semibold text-white">Reports</h2>
-              <p className="mt-2 text-sm text-slate-400">
+            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-slate-950">Reports</h2>
+              <p className="mt-2 text-sm text-slate-500">
                 4 completed jobs are waiting for photo review before being sent
                 to clients.
               </p>
