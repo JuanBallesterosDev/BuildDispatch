@@ -1,16 +1,16 @@
-# FieldOps AI
+# BuildDispatch
 
-FieldOps AI is a multi-tenant SaaS operations platform for HVAC contractors and small construction service companies. It helps office teams and field crews manage work orders, job sites, material usage, photo evidence, and client-ready service reports from one web and mobile-friendly application.
+BuildDispatch is a multi-tenant SaaS operations platform for HVAC contractors and small construction service companies. It helps office teams and field crews manage work orders, job sites, material usage, photo evidence, and client-ready service reports from one web and mobile-friendly application.
 
 ## Problem
 
 Small HVAC and construction service companies often coordinate field work through phone calls, spreadsheets, text messages, and scattered photos. This creates slow dispatching, incomplete job history, weak material tracking, and delayed client reporting.
 
-FieldOps AI focuses on one core operational problem: crews complete work in the field, but the office does not receive clean, structured, report-ready information fast enough.
+BuildDispatch focuses on one core operational problem: crews complete work in the field, but the office does not receive clean, structured, report-ready information fast enough.
 
 ## Goal
 
-The goal of FieldOps AI is to provide a production-style SaaS application that demonstrates:
+The goal of BuildDispatch is to provide a production-style SaaS application that demonstrates:
 
 - Multi-tenant organization architecture
 - Role-based access control

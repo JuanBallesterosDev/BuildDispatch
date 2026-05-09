@@ -30,7 +30,7 @@ export default function Home() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">
-                FieldOps AI
+                BuildDispatch
               </p>
               <h1 className="mt-2 text-2xl font-semibold text-slate-950">
                 Northline Mechanical & Build

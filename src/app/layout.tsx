@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FieldOps AI",
+  title: "BuildDispatch",
   description: "A multi-tenant field service platform for HVAC contractors and small construction service companies",
 };
 
