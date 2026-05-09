@@ -1,33 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getDemoDashboard } from "@/features/dashboard/data";
 
 export default async function Home() {
-  const organization = await prisma.organization.findUnique({
-    where: {
-      slug: "northline-mechanical-build",
-    },
-    include: {
-      workOrders: {
-        include: {
-          client: true,
-          assignments: {
-            include: {
-              user: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 3,
-      },
-      materials: {
-        orderBy: {
-          quantityOnHand: "asc",
-        },
-        take: 1,
-      },
-    },  
-  });
+  const organization = await getDemoDashboard();
 
   if(!organization){
     return(
