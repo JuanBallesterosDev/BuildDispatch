@@ -1,6 +1,15 @@
 import { LoginForm } from "@/features/auth/login-form";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default function LoginPage() {
+
+export default async function LoginPage() {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect("/");
+  }
+
   return (
     <main className="grid min-h-screen w-full place-items-center bg-slate-100 px-4 py-10 text-slate-950">
       <section className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
