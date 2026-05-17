@@ -1,15 +1,10 @@
-import { getDemoDashboard } from "@/features/dashboard/data";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getCurrentUserContext } from "@/features/auth/user-context";
+import { getDashboardData } from "@/features/dashboard/data";
+
 
 export default async function Home() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/login");
-  }
-  
-  const organization = await getDemoDashboard();
+  const context = await getCurrentUserContext();
+  const organization = await getDashboardData(context.organization.id);
 
   if(!organization){
     return(

@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
-export async function getDemoDashboard() {
+export async function getDashboardData(organizationId: string) {
   const organization = await prisma.organization.findUnique({
     where: {
-      slug: "northline-mechanical-build",
+      id: organizationId,
     },
     include: {
       workOrders: {
