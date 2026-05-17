@@ -1,5 +1,6 @@
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { getDashboardData } from "@/features/dashboard/data";
+import { logoutAction } from "@/features/auth/actions";
 
 
 export default async function Home() {
@@ -44,6 +45,14 @@ export default async function Home() {
               <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                 Review reports
               </button>
+              <form action={logoutAction}>
+                <button
+                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  type="submit"
+                >
+                  Sign out
+                </button>
+              </form>
             </div>
           </div>
         </header>

@@ -1,7 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 
 export type LoginState ={
     error?: string;
@@ -28,4 +28,10 @@ export async function loginAction(
 
     throw error;
   }
+}
+
+export async function logoutAction() {
+  await signOut({
+    redirectTo: "/login",
+  });
 }
