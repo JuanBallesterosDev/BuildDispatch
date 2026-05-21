@@ -1,7 +1,7 @@
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { getDashboardData } from "@/features/dashboard/data";
 import { logoutAction } from "@/features/auth/actions";
-
+import { roleLabels } from "@/features/auth/permissions";
 
 export default async function Home() {
   const context = await getCurrentUserContext();
@@ -35,6 +35,13 @@ export default async function Home() {
               </h1>
               <p className="mt-1 text-sm text-slate-500">
                 HVAC and construction work orders for today.
+              </p>
+              <p className="mt-2 text-sm text-slate-500">
+                Signed in as{" "}
+                <span className="font-medium text-slate-700">{context.user.name}</span> ·{" "}
+                <span className="font-medium text-slate-700">
+                  {roleLabels[context.role]}
+                </span>
               </p>
             </div>
 
