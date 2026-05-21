@@ -1,11 +1,17 @@
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { getDashboardData } from "@/features/dashboard/data";
 import { logoutAction } from "@/features/auth/actions";
-import { roleLabels } from "@/features/auth/permissions";
+import { roleLabels, hasAnyRole } from "@/features/auth/permissions";
+
 
 export default async function Home() {
   const context = await getCurrentUserContext();
   const organization = await getDashboardData(context.organization.id);
+  const canManageWorkOrders = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+  ]);
 
   if(!organization){
     return(
@@ -46,12 +52,16 @@ export default async function Home() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">
-                New work order
-              </button>
-              <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                Review reports
-              </button>
+              {canManageWorkOrders ? (
+                <>
+                  <button className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">
+                    New work order
+                  </button>
+                  <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    Review reports
+                  </button>
+                </>
+              ) : null}
               <form action={logoutAction}>
                 <button
                   className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
