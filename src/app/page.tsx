@@ -13,6 +13,15 @@ export default async function Home() {
     "DISPATCHER",
   ]);
 
+  const canUpdateFieldWork = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
+  const isReadOnly = context.role === "VIEWER";
+
   if(!organization){
     return(
       <main className="min-h-screen bg-slate-50 p-6 text-slate-950">
@@ -152,19 +161,39 @@ export default async function Home() {
           <aside className="space-y-4">
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold text-slate-950">
-                Quick actions
+                {isReadOnly ? "Read-only access" : "Quick actions"}
               </h2>
-              <div className="mt-4 grid gap-2">
-                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
-                  Assign urgent work
-                </button>
-                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
-                  Add material usage
-                </button>
-                <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
-                  Generate service report
-                </button>
-              </div>
+              {isReadOnly ? (
+                <p className="mt-2 text-sm text-slate-500">
+                  This role can review work orders and reports, but cannot make operational
+                  changes.
+                </p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {canManageWorkOrders ? (
+                    <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                      Assign urgent work
+                    </button>
+                  ) : null}
+
+                  {canUpdateFieldWork ? (
+                    <>
+                      <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        Add field note
+                      </button>
+                      <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        Log material used
+                      </button>
+                    </>
+                  ) : null}
+
+                  {canManageWorkOrders ? (
+                    <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                      Generate service report
+                    </button>
+                  ) : null}
+                </div>
+              )}
             </div>
 
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
