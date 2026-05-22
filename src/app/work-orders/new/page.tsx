@@ -2,6 +2,7 @@ import { getCurrentUserContext } from "@/features/auth/user-context";
 import { hasAnyRole } from "@/features/auth/permissions";
 import { getWorkOrderFormData } from "@/features/work-orders/data";
 import Link from "next/link";
+import { createWorkOrderAction } from "@/features/work-orders/actions";
 
 export default async function NewWorkOrderPage() {
   const context = await getCurrentUserContext();
@@ -25,7 +26,9 @@ export default async function NewWorkOrderPage() {
     );
   }
 
-  const { clients } = await getWorkOrderFormData(context.organization.id);
+ const { clients, assignableUsers } = await getWorkOrderFormData(
+    context.organization.id,
+  );
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
@@ -40,7 +43,10 @@ export default async function NewWorkOrderPage() {
           </p>
         </div>
 
-        <form className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <form
+          action={createWorkOrderAction}
+          className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+        >
           <div className="grid gap-5">
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -76,6 +82,22 @@ export default async function NewWorkOrderPage() {
               <label className="block text-sm font-medium text-slate-700">
                 Job site
               </label>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Assign to
+                </label>
+                <select
+                  className="mt-2 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                  name="assignedUserId"
+                >
+                  <option value="">Leave unassigned</option>
+                  {assignableUsers.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <select
                 className="mt-2 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
                 name="jobSiteId"
