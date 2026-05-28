@@ -79,9 +79,6 @@ export default async function NewWorkOrderPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Job site
-              </label>
               <div>
                 <label className="block text-sm font-medium text-slate-700">
                   Assign to
@@ -98,6 +95,9 @@ export default async function NewWorkOrderPage() {
                   ))}
                 </select>
               </div>
+              <label className="block text-sm font-medium text-slate-700">
+                Job site
+              </label>
               <select
                 className="mt-2 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
                 name="jobSiteId"
