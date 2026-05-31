@@ -2,6 +2,7 @@ import { getCurrentUserContext } from "@/features/auth/user-context";
 import { getDashboardData } from "@/features/dashboard/data";
 import { logoutAction } from "@/features/auth/actions";
 import { roleLabels, hasAnyRole } from "@/features/auth/permissions";
+import Link from "next/link";
 
 
 export default async function Home() {
@@ -63,12 +64,12 @@ export default async function Home() {
             <div className="flex flex-wrap gap-2">
               {canManageWorkOrders ? (
                 <>
-                  <a
+                  <Link
                     className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
                     href="/work-orders/new"
                   >
                     New work order
-                  </a>
+                  </Link>
                   <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Review reports
                   </button>
@@ -174,9 +175,19 @@ export default async function Home() {
               ) : (
                 <div className="mt-4 grid gap-2">
                   {canManageWorkOrders ? (
-                    <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
-                      Assign urgent work
-                    </button>
+                    <>
+                      <Link
+                        className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
+                        href="/clients/new"
+                      >
+                        Add client and job site
+                      </Link>
+
+                      <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        Assign urgent work
+                      </button>
+                    </>
+                    
                   ) : null}
 
                   {canUpdateFieldWork ? (
