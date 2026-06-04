@@ -41,3 +41,25 @@ export async function getWorkOrderFormData(organizationId: string) {
     assignableUsers,
   };
 }
+
+export async function getWorkOrders(organizationId: string) {
+  const workOrders = await prisma.workOrder.findMany({
+    where: {
+      organizationId,
+    },
+    include: {
+      client: true,
+      jobSite: true,
+      assignments: {
+        include: {
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return workOrders;
+}
