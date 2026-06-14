@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { roleLabels } from "@/features/auth/permissions";
+import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
 import { getWorkOrderById } from "@/features/work-orders/data";
+import { addFieldNoteAction } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -25,6 +26,12 @@ export default async function WorkOrderDetailPage({
     workOrder.assignments.map((assignment) => assignment.user.name).join(", ") ||
     "Unassigned";
 
+  const canAddFieldNotes = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);  
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -110,6 +117,26 @@ export default async function WorkOrderDetailPage({
 
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold">Field notes</h2>
+
+              {canAddFieldNotes ? (
+                <form action={addFieldNoteAction} className="mt-4 space-y-3">
+                  <input name="workOrderId" type="hidden" value={workOrder.id} />
+
+                  <textarea
+                    className="block min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                    name="body"
+                    placeholder="Add site update, issue found, work completed, or follow-up needed."
+                    required
+                  />
+
+                  <button
+                    className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                    type="submit"
+                  >
+                    Add field note
+                  </button>
+                </form>
+              ) : null}
 
               {workOrder.fieldNotes.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">

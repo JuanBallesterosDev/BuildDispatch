@@ -84,3 +84,46 @@ export async function createWorkOrderAction(formData: FormData) {
 
   redirect("/");
 }
+
+export async function addFieldNoteAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  const canAddFieldNotes = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
+  if (!canAddFieldNotes) {
+    throw new Error("You do not have permission to add field notes.");
+  }
+
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+  const body = String(formData.get("body") ?? "").trim();
+
+  if (!workOrderId || !body) {
+    throw new Error("Work order and note body are required.");
+  }
+
+  const workOrder = await prisma.workOrder.findFirst({
+    where: {
+      id: workOrderId,
+      organizationId: context.organization.id,
+    },
+  });
+
+  if (!workOrder) {
+    throw new Error("Work order not found for this organization.");
+  }
+
+  await prisma.fieldNote.create({
+    data: {
+      workOrderId,
+      authorId: context.user.id,
+      body,
+    },
+  });
+
+  redirect(`/work-orders/${workOrderId}`);
+}
