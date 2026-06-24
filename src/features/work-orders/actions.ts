@@ -127,3 +127,74 @@ export async function addFieldNoteAction(formData: FormData) {
 
   redirect(`/work-orders/${workOrderId}`);
 }
+
+export async function logMaterialUsageAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  const canLogMaterials = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
+  if (!canLogMaterials) {
+    throw new Error("You do not have permission to log material usage.");
+  }
+
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+  const materialId = String(formData.get("materialId") ?? "");
+  const quantity = Number(formData.get("quantity") ?? 0);
+
+  if (!workOrderId || !materialId || !Number.isInteger(quantity) || quantity <= 0) {
+    throw new Error("Work order, material, and valid quantity are required.");
+  }
+
+  const workOrder = await prisma.workOrder.findFirst({
+    where: {
+      id: workOrderId,
+      organizationId: context.organization.id,
+    },
+  });
+
+  if (!workOrder) {
+    throw new Error("Work order not found for this organization.");
+  }
+
+  const material = await prisma.material.findFirst({
+    where: {
+      id: materialId,
+      organizationId: context.organization.id,
+    },
+  });
+
+  if (!material) {
+    throw new Error("Material not found for this organization.");
+  }
+
+  if (material.quantityOnHand < quantity) {
+    throw new Error("Not enough material in stock.");
+  }
+
+  await prisma.$transaction([
+    prisma.materialUsage.create({
+      data: {
+        workOrderId,
+        materialId,
+        quantity,
+      },
+    }),
+    prisma.material.update({
+      where: {
+        id: materialId,
+      },
+      data: {
+        quantityOnHand: {
+          decrement: quantity,
+        },
+      },
+    }),
+  ]);
+
+  redirect(`/work-orders/${workOrderId}`);
+}

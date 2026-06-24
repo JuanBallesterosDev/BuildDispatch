@@ -107,3 +107,16 @@ export async function getWorkOrderById(
 
   return workOrder;
 }
+
+export async function getMaterialsForOrganization(organizationId: string) {
+  const materials = await prisma.material.findMany({
+    where: {
+      organizationId,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  return materials;
+}

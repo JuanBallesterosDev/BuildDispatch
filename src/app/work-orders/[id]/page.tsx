@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
-import { getWorkOrderById } from "@/features/work-orders/data";
-import { addFieldNoteAction } from "@/features/work-orders/actions";
+import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
+import { addFieldNoteAction, logMaterialUsageAction } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -17,6 +17,7 @@ export default async function WorkOrderDetailPage({
   const { id } = await params;
   const context = await getCurrentUserContext();
   const workOrder = await getWorkOrderById(context.organization.id, id);
+  const materials = await getMaterialsForOrganization(context.organization.id);
 
   if (!workOrder) {
     notFound();
@@ -32,6 +33,13 @@ export default async function WorkOrderDetailPage({
     "DISPATCHER",
     "TECHNICIAN",
   ]);  
+  const canLogMaterials = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -178,6 +186,41 @@ export default async function WorkOrderDetailPage({
 
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold">Material usage</h2>
+
+              {canLogMaterials ? (
+                <form action={logMaterialUsageAction} className="mt-4 space-y-3">
+                  <input name="workOrderId" type="hidden" value={workOrder.id} />
+
+                  <select
+                    className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                    name="materialId"
+                    required
+                  >
+                    <option value="">Select material</option>
+                    {materials.map((material) => (
+                      <option key={material.id} value={material.id}>
+                        {material.name} ({material.quantityOnHand} {material.unit} available)
+                      </option>
+                    ))}
+                  </select>
+
+                  <input
+                    className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                    min="1"
+                    name="quantity"
+                    placeholder="Quantity used"
+                    type="number"
+                    required
+                  />
+
+                  <button
+                    className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                    type="submit"
+                  >
+                    Log material
+                  </button>
+                </form>
+              ) : null}
 
               {workOrder.materialUsages.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">
