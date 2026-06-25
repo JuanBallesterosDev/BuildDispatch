@@ -198,3 +198,47 @@ export async function logMaterialUsageAction(formData: FormData) {
 
   redirect(`/work-orders/${workOrderId}`);
 }
+
+export async function completeWorkOrderAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  const canCompleteWorkOrders = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
+  if (!canCompleteWorkOrders) {
+    throw new Error("You do not have permission to complete work orders.");
+  }
+
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+
+  if (!workOrderId) {
+    throw new Error("Work order is required.");
+  }
+
+  const workOrder = await prisma.workOrder.findFirst({
+    where: {
+      id: workOrderId,
+      organizationId: context.organization.id,
+    },
+  });
+
+  if (!workOrder) {
+    throw new Error("Work order not found for this organization.");
+  }
+
+  await prisma.workOrder.update({
+    where: {
+      id: workOrder.id,
+    },
+    data: {
+      status: "COMPLETED",
+      completedAt: new Date(),
+    },
+  });
+
+  redirect(`/work-orders/${workOrderId}`);
+}

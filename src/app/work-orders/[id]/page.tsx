@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
 import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
-import { addFieldNoteAction, logMaterialUsageAction } from "@/features/work-orders/actions";
+import { addFieldNoteAction, logMaterialUsageAction, completeWorkOrderAction } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -40,6 +40,15 @@ export default async function WorkOrderDetailPage({
     "TECHNICIAN",
   ]);
 
+  const canCompleteWorkOrders = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+    "TECHNICIAN",
+  ]);
+
+  const isCompleted = workOrder.status === "COMPLETED";
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -64,6 +73,18 @@ export default async function WorkOrderDetailPage({
                 </span>
               </p>
             </div>
+
+            {canCompleteWorkOrders && !isCompleted ? (
+              <form action={completeWorkOrderAction}>
+                <input name="workOrderId" type="hidden" value={workOrder.id} />
+                <button
+                  className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+                  type="submit"
+                >
+                  Mark complete
+                </button>
+              </form>
+            ) : null}
 
             <div className="flex flex-wrap gap-2">
               <Link
