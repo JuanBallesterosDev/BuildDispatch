@@ -242,3 +242,98 @@ export async function completeWorkOrderAction(formData: FormData) {
 
   redirect(`/work-orders/${workOrderId}`);
 }
+
+export async function generateServiceReportAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  const canGenerateReports = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+  ]);
+
+  if (!canGenerateReports) {
+    throw new Error("You do not have permission to generate service reports.");
+  }
+
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+
+  if (!workOrderId) {
+    throw new Error("Work order is required.");
+  }
+
+  const workOrder = await prisma.workOrder.findFirst({
+    where: {
+      id: workOrderId,
+      organizationId: context.organization.id,
+    },
+    include: {
+      client: true,
+      jobSite: true,
+      fieldNotes: {
+        include: {
+          author: true,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+      materialUsages: {
+        include: {
+          material: true,
+        },
+      },
+    },
+  });
+
+  if (!workOrder) {
+    throw new Error("Work order not found for this organization.");
+  }
+
+  if (workOrder.status !== "COMPLETED") {
+    throw new Error("Only completed work orders can generate service reports.");
+  }
+
+  const notesSummary =
+    workOrder.fieldNotes.length > 0
+      ? workOrder.fieldNotes
+          .map((note) => `${note.author.name}: ${note.body}`)
+          .join("\n")
+      : "No field notes were recorded.";
+
+  const materialsSummary =
+    workOrder.materialUsages.length > 0
+      ? workOrder.materialUsages
+          .map(
+            (usage) =>
+              `- ${usage.quantity} ${usage.material.unit} of ${usage.material.name}`,
+          )
+          .join("\n")
+      : "No materials were logged for this work order.";
+
+  const summary = [
+    `Service Report: ${workOrder.title}`,
+    "",
+    `Client: ${workOrder.client.name}`,
+    `Job Site: ${workOrder.jobSite.name}`,
+    `Status: ${workOrder.status}`,
+    "",
+    "Work Description:",
+    workOrder.description || "No description provided.",
+    "",
+    "Field Notes:",
+    notesSummary,
+    "",
+    "Materials Used:",
+    materialsSummary,
+  ].join("\n");
+
+  await prisma.serviceReport.create({
+    data: {
+      workOrderId,
+      summary,
+    },
+  });
+
+  redirect(`/work-orders/${workOrderId}`);
+}

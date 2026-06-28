@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
 import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
-import { addFieldNoteAction, logMaterialUsageAction, completeWorkOrderAction } from "@/features/work-orders/actions";
+import { addFieldNoteAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -49,6 +49,12 @@ export default async function WorkOrderDetailPage({
 
   const isCompleted = workOrder.status === "COMPLETED";
 
+  const canGenerateReports = hasAnyRole(context.role, [
+    "OWNER",
+    "ADMIN",
+    "DISPATCHER",
+  ]);
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -82,6 +88,18 @@ export default async function WorkOrderDetailPage({
                   type="submit"
                 >
                   Mark complete
+                </button>
+              </form>
+            ) : null}
+
+            {canGenerateReports && isCompleted ? (
+              <form action={generateServiceReportAction}>
+                <input name="workOrderId" type="hidden" value={workOrder.id} />
+                <button
+                  className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                  type="submit"
+                >
+                  Generate report
                 </button>
               </form>
             ) : null}
@@ -267,7 +285,25 @@ export default async function WorkOrderDetailPage({
             </div>
 
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-lg font-semibold">Service reports</h2>
+              {workOrder.serviceReports.length === 0 ? (
+                <p className="mt-3 text-sm text-slate-500">No reports generated yet.</p>
+              ) : (
+                <div className="mt-4 space-y-3">
+                  {workOrder.serviceReports.map((report) => (
+                    <div
+                      className="rounded-md border border-slate-200 bg-slate-50 p-3"
+                      key={report.id}
+                    >
+                      <p className="text-sm font-medium text-slate-700">
+                        Generated {report.createdAt.toLocaleDateString("en-CA")}
+                      </p>
+                      <pre className="mt-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
+                        {report.summary}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              )}
               <p className="mt-3 text-sm text-slate-500">
                 {workOrder.serviceReports.length} report
                 {workOrder.serviceReports.length === 1 ? "" : "s"} generated.
