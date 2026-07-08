@@ -300,6 +300,13 @@ export default async function WorkOrderDetailPage({
                       <pre className="mt-3 whitespace-pre-wrap text-xs leading-5 text-slate-600">
                         {report.summary}
                       </pre>
+                      <Link
+                        className="mt-3 inline-flex rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        href={`/work-orders/${workOrder.id}/report.pdf`}
+                        target="_blank"
+                      >
+                        Download PDF
+                      </Link>
                     </div>
                   ))}
                 </div>
