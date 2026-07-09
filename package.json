@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "check": "npm run lint && npm run test -- --run",
     "test": "vitest"
   },
   "dependencies": {
