@@ -12,7 +12,8 @@ import Link from "next/link";
 
 export default async function Home() {
   const context = await getCurrentUserContext();
-  const organization = await getDashboardData(context.organization.id);
+  const dashboard = await getDashboardData(context.organization.id);
+  const organization = dashboard.organization;
   const canManageWorkOrdersForUser = canManageWorkOrders(context.role);
   const canUpdateFieldWorkForUser = canUpdateFieldWork(context.role);
   const isReadOnly = isReadOnlyRole(context.role);
@@ -87,7 +88,9 @@ export default async function Home() {
         <section className="mb-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm font-medium text-slate-500">Open today</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-950">8</p>
+            <p className="mt-3 text-3xl font-semibold text-slate-950">
+              {dashboard.metrics.openToday}
+            </p>
             <p className="mt-2 text-sm text-slate-500">
               Work orders scheduled or waiting.
             </p>
@@ -95,7 +98,9 @@ export default async function Home() {
 
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm font-medium text-slate-500">In progress</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-950">3</p>
+            <p className="mt-3 text-3xl font-semibold text-slate-950">
+              {dashboard.metrics.inProgress}
+            </p>
             <p className="mt-2 text-sm text-slate-500">
               Crews currently on site.
             </p>
@@ -105,7 +110,9 @@ export default async function Home() {
             <p className="text-sm font-medium text-rose-700">
               Needs attention
             </p>
-            <p className="mt-3 text-3xl font-semibold text-rose-950">2</p>
+            <p className="mt-3 text-3xl font-semibold text-rose-950">
+              {dashboard.metrics.needsAttention}
+            </p>
             <p className="mt-2 text-sm text-rose-700">
               Unassigned urgent work or missing report details.
             </p>
