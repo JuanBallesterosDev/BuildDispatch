@@ -1,27 +1,21 @@
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { getDashboardData } from "@/features/dashboard/data";
 import { logoutAction } from "@/features/auth/actions";
-import { roleLabels, hasAnyRole } from "@/features/auth/permissions";
+import { roleLabels } from "@/features/auth/permissions";
+import {
+  canManageWorkOrders,
+  canUpdateFieldWork,
+  isReadOnlyRole,
+} from "@/features/auth/policies";
 import Link from "next/link";
 
 
 export default async function Home() {
   const context = await getCurrentUserContext();
   const organization = await getDashboardData(context.organization.id);
-  const canManageWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
-
-  const canUpdateFieldWork = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
-
-  const isReadOnly = context.role === "VIEWER";
+  const canManageWorkOrdersForUser = canManageWorkOrders(context.role);
+  const canUpdateFieldWorkForUser = canUpdateFieldWork(context.role);
+  const isReadOnly = isReadOnlyRole(context.role);
 
   if(!organization){
     return(
@@ -62,7 +56,7 @@ export default async function Home() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {canManageWorkOrders ? (
+              {canManageWorkOrdersForUser ? (
                 <>
                   <Link
                     className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
@@ -177,7 +171,7 @@ export default async function Home() {
                 </p>
               ) : (
                 <div className="mt-4 grid gap-2">
-                  {canManageWorkOrders ? (
+                  {canManageWorkOrdersForUser ? (
                     <>
                       <Link
                         className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
@@ -193,7 +187,7 @@ export default async function Home() {
                     
                   ) : null}
 
-                  {canUpdateFieldWork ? (
+                  {canUpdateFieldWorkForUser ? (
                     <>
                       <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
                         Add field note
@@ -204,7 +198,7 @@ export default async function Home() {
                     </>
                   ) : null}
 
-                  {canManageWorkOrders ? (
+                  {canManageWorkOrdersForUser ? (
                     <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
                       Generate service report
                     </button>

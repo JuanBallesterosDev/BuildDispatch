@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
+import { roleLabels } from "@/features/auth/permissions";
+import {
+  canGenerateServiceReports,
+  canUpdateFieldWork,
+} from "@/features/auth/policies";
 import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
 import { addFieldNoteAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction } from "@/features/work-orders/actions";
 
@@ -27,33 +31,11 @@ export default async function WorkOrderDetailPage({
     workOrder.assignments.map((assignment) => assignment.user.name).join(", ") ||
     "Unassigned";
 
-  const canAddFieldNotes = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);  
-  const canLogMaterials = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
-
-  const canCompleteWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
+  const canUpdateFieldWorkForUser = canUpdateFieldWork(context.role);
 
   const isCompleted = workOrder.status === "COMPLETED";
 
-  const canGenerateReports = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
+  const canGenerateReportsForUser = canGenerateServiceReports(context.role);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
@@ -80,7 +62,7 @@ export default async function WorkOrderDetailPage({
               </p>
             </div>
 
-            {canCompleteWorkOrders && !isCompleted ? (
+            {canUpdateFieldWorkForUser && !isCompleted ? (
               <form action={completeWorkOrderAction}>
                 <input name="workOrderId" type="hidden" value={workOrder.id} />
                 <button
@@ -92,7 +74,7 @@ export default async function WorkOrderDetailPage({
               </form>
             ) : null}
 
-            {canGenerateReports && isCompleted ? (
+            {canGenerateReportsForUser && isCompleted ? (
               <form action={generateServiceReportAction}>
                 <input name="workOrderId" type="hidden" value={workOrder.id} />
                 <button
@@ -165,7 +147,7 @@ export default async function WorkOrderDetailPage({
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold">Field notes</h2>
 
-              {canAddFieldNotes ? (
+              {canUpdateFieldWorkForUser ? (
                 <form action={addFieldNoteAction} className="mt-4 space-y-3">
                   <input name="workOrderId" type="hidden" value={workOrder.id} />
 
@@ -226,7 +208,7 @@ export default async function WorkOrderDetailPage({
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold">Material usage</h2>
 
-              {canLogMaterials ? (
+              {canUpdateFieldWorkForUser ? (
                 <form action={logMaterialUsageAction} className="mt-4 space-y-3">
                   <input name="workOrderId" type="hidden" value={workOrder.id} />
 
