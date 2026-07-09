@@ -3,19 +3,17 @@
 import { redirect } from "next/navigation";
 import { Priority, WorkOrderStatus } from "@/generated/prisma/enums";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole } from "@/features/auth/permissions";
 import { prisma } from "@/lib/prisma";
+import {
+  canGenerateServiceReports,
+  canManageWorkOrders,
+  canUpdateFieldWork,
+} from "@/features/auth/policies";
 
 export async function createWorkOrderAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canCreateWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
-
-  if (!canCreateWorkOrders) {
+  if (!canManageWorkOrders(context.role)) {
     throw new Error("You do not have permission to create work orders.");
   }
 
@@ -88,14 +86,7 @@ export async function createWorkOrderAction(formData: FormData) {
 export async function addFieldNoteAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canAddFieldNotes = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
-
-  if (!canAddFieldNotes) {
+  if (!canUpdateFieldWork(context.role)) {
     throw new Error("You do not have permission to add field notes.");
   }
 
@@ -131,14 +122,7 @@ export async function addFieldNoteAction(formData: FormData) {
 export async function logMaterialUsageAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canLogMaterials = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
-
-  if (!canLogMaterials) {
+  if (!canUpdateFieldWork(context.role)) {
     throw new Error("You do not have permission to log material usage.");
   }
 
@@ -202,14 +186,7 @@ export async function logMaterialUsageAction(formData: FormData) {
 export async function completeWorkOrderAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canCompleteWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-    "TECHNICIAN",
-  ]);
-
-  if (!canCompleteWorkOrders) {
+  if (!canUpdateFieldWork(context.role)) {
     throw new Error("You do not have permission to complete work orders.");
   }
 
@@ -246,13 +223,7 @@ export async function completeWorkOrderAction(formData: FormData) {
 export async function generateServiceReportAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canGenerateReports = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
-
-  if (!canGenerateReports) {
+  if (!canGenerateServiceReports(context.role)) {
     throw new Error("You do not have permission to generate service reports.");
   }
 
