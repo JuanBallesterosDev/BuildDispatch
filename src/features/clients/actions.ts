@@ -4,17 +4,12 @@ import { redirect } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { hasAnyRole } from "@/features/auth/permissions";
 import { prisma } from "@/lib/prisma";
+import { canCreateClients } from "@/features/auth/policies";
 
 export async function createClientAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
-  const canCreateClients = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
-
-  if (!canCreateClients) {
+  if (!canCreateClients(context.role)) {
     throw new Error("You do not have permission to create clients.");
   }
 
