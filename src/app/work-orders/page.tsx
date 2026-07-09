@@ -1,17 +1,14 @@
 import Link from "next/link";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole, roleLabels } from "@/features/auth/permissions";
+import { roleLabels } from "@/features/auth/permissions";
+import { canManageWorkOrders } from "@/features/auth/policies";
 import { getWorkOrders } from "@/features/work-orders/data";
 
 export default async function WorkOrdersPage() {
   const context = await getCurrentUserContext();
   const workOrders = await getWorkOrders(context.organization.id);
 
-  const canManageWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
+  const canManageWorkOrdersForUser = canManageWorkOrders(context.role);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
@@ -36,7 +33,7 @@ export default async function WorkOrdersPage() {
                 Dashboard
               </Link>
 
-              {canManageWorkOrders ? (
+              {canManageWorkOrdersForUser ? (
                 <Link
                   className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
                   href="/work-orders/new"

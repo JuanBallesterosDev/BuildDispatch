@@ -1,5 +1,5 @@
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole } from "@/features/auth/permissions";
+import { canManageWorkOrders } from "@/features/auth/policies";
 import { getWorkOrderFormData } from "@/features/work-orders/data";
 import Link from "next/link";
 import { createWorkOrderAction } from "@/features/work-orders/actions";
@@ -7,11 +7,7 @@ import { createWorkOrderAction } from "@/features/work-orders/actions";
 export default async function NewWorkOrderPage() {
   const context = await getCurrentUserContext();
 
-  const canCreateWorkOrders = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
+  const canCreateWorkOrders = canManageWorkOrders(context.role);
 
   if (!canCreateWorkOrders) {
     return (

@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole } from "@/features/auth/permissions";
+import { canCreateClients } from "@/features/auth/policies";
 import { createClientAction } from "@/features/clients/actions";
 
 export default async function NewClientPage() {
   const context = await getCurrentUserContext();
 
-  const canCreateClients = hasAnyRole(context.role, [
-    "OWNER",
-    "ADMIN",
-    "DISPATCHER",
-  ]);
+  const canCreateClientsForUser = canCreateClients(context.role);
 
-  if (!canCreateClients) {
+  if (!canCreateClientsForUser) {
     return (
       <main className="min-h-screen bg-slate-50 p-6 text-slate-950">
         <section className="mx-auto max-w-2xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">

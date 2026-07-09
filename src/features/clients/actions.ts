@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { getCurrentUserContext } from "@/features/auth/user-context";
-import { hasAnyRole } from "@/features/auth/permissions";
 import { prisma } from "@/lib/prisma";
 import { canCreateClients } from "@/features/auth/policies";
 
