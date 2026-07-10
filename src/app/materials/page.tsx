@@ -2,10 +2,12 @@ import Link from "next/link";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { roleLabels } from "@/features/auth/permissions";
 import { getMaterials } from "@/features/materials/data";
+import { canManageWorkOrders } from "@/features/auth/policies";
 
 export default async function MaterialsPage() {
   const context = await getCurrentUserContext();
   const materials = await getMaterials(context.organization.id);
+  const canManageInventory = canManageWorkOrders(context.role);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
@@ -29,6 +31,14 @@ export default async function MaterialsPage() {
               >
                 Dashboard
               </Link>
+              {canManageInventory ? (
+                <Link
+                  className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                  href="/materials/new"
+                >
+                  New material
+                </Link>
+              ) : null}
             </div>
           </div>
         </header>
