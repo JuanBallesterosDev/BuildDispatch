@@ -10,11 +10,20 @@ import {
   canUpdateFieldWork,
 } from "@/features/auth/policies";
 
-export async function createWorkOrderAction(formData: FormData) {
+export type CreateWorkOrderState = {
+  error?: string;
+};
+
+export async function createWorkOrderAction(
+  _previousState: CreateWorkOrderState,
+  formData: FormData,
+): Promise<CreateWorkOrderState> {
   const context = await getCurrentUserContext();
 
   if (!canManageWorkOrders(context.role)) {
-    throw new Error("You do not have permission to create work orders.");
+    return {
+      error: "You do not have permission to create work orders.",
+    };
   }
 
   const title = String(formData.get("title") ?? "").trim();
@@ -26,7 +35,9 @@ export async function createWorkOrderAction(formData: FormData) {
   const scheduledForValue = String(formData.get("scheduledFor") ?? "");
 
   if (!title || !clientId || !jobSiteId) {
-    throw new Error("Title, client, and job site are required.");
+    return {
+      error: "Title, client, and job site are required.",
+    };
   }
 
   const jobSite = await prisma.jobSite.findFirst({
@@ -38,7 +49,9 @@ export async function createWorkOrderAction(formData: FormData) {
   });
 
   if (!jobSite) {
-    throw new Error("Invalid job site for this organization.");
+    return {
+      error: "Invalid job site for this organization.",
+    };
   }
 
   if (assignedUserId) {
@@ -53,8 +66,10 @@ export async function createWorkOrderAction(formData: FormData) {
         },
     });
 
-    if (!assignableUser) {
-        throw new Error("Invalid assignee for this organization.");
+   if (!assignableUser) {
+      return {
+        error: "Invalid assignee for this organization.",
+      };
     }
   }
 
