@@ -5,11 +5,19 @@ import { canManageWorkOrders } from "@/features/auth/policies";
 import { getCurrentUserContext } from "@/features/auth/user-context";
 import { prisma } from "@/lib/prisma";
 
-export async function createMaterialAction(formData: FormData) {
+export type CreateMaterialState = {
+  error?: string;
+};
+export async function createMaterialAction(
+  _previousState: CreateMaterialState,
+  formData: FormData,
+): Promise<CreateMaterialState> {
   const context = await getCurrentUserContext();
 
   if (!canManageWorkOrders(context.role)) {
-    throw new Error("You do not have permission to create materials.");
+    return {
+      error: "You do not have permission to create materials.",
+    };
   }
 
   const name = String(formData.get("name") ?? "").trim();
@@ -19,7 +27,9 @@ export async function createMaterialAction(formData: FormData) {
   const reorderLevel = Number(formData.get("reorderLevel") ?? 0);
 
   if (!name || !unit) {
-    throw new Error("Material name and unit are required.");
+    return {
+      error: "Material name and unit are required.",
+    };
   }
 
   if (
@@ -28,7 +38,9 @@ export async function createMaterialAction(formData: FormData) {
     !Number.isInteger(reorderLevel) ||
     reorderLevel < 0
   ) {
-    throw new Error("Quantities must be valid non-negative whole numbers.");
+    return {
+      error: "Quantities must be valid non-negative whole numbers.",
+    };
   }
 
   await prisma.material.create({
