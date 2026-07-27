@@ -5,11 +5,20 @@ import { getCurrentUserContext } from "@/features/auth/user-context";
 import { prisma } from "@/lib/prisma";
 import { canCreateClients } from "@/features/auth/policies";
 
-export async function createClientAction(formData: FormData) {
+export type CreateClientState = {
+  error?: string;
+};
+
+export async function createClientAction(
+  _previousState: CreateClientState,
+  formData: FormData,
+): Promise<CreateClientState> {
   const context = await getCurrentUserContext();
 
   if (!canCreateClients(context.role)) {
-    throw new Error("You do not have permission to create clients.");
+    return {
+      error: "You do not have permission to create clients.",
+    };
   }
 
   const clientName = String(formData.get("clientName") ?? "").trim();
@@ -25,7 +34,9 @@ export async function createClientAction(formData: FormData) {
   const notes = String(formData.get("notes") ?? "").trim();
 
   if (!clientName || !siteName || !address) {
-    throw new Error("Client name, site name, and address are required.");
+    return {
+      error: "Client name, site name, and address are required.",
+    };
   }
 
   await prisma.client.create({
