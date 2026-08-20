@@ -2,6 +2,24 @@
 
 BuildDispatch is a multi-tenant SaaS operations platform for HVAC contractors and small construction service companies. It helps office teams and field crews manage work orders, job sites, material usage, photo evidence, and client-ready service reports from one web and mobile-friendly application.
 
+## Live Demo
+
+Live app: https://build-dispatch.vercel.app
+
+Demo users:
+
+```text
+owner@builddispatch.dev
+daniel@builddispatch.dev
+maria@builddispatch.dev
+```
+
+Demo password:
+
+```text
+Demo credentials available on request.
+```
+
 ## Problem
 
 Small HVAC and construction service companies often coordinate field work through phone calls, spreadsheets, text messages, and scattered photos. This creates slow dispatching, incomplete job history, weak material tracking, and delayed client reporting.
@@ -27,11 +45,10 @@ The goal of BuildDispatch is to provide a production-style SaaS application that
 - TypeScript
 - Tailwind CSS
 - Prisma
-- SQLite for local development
-- PostgreSQL for production deployment
+- PostgreSQL
 - Auth.js
 - React PDF
-- Playwright / Vitest
+- Vitest
 
 ## Planned MVP
 
@@ -51,14 +68,16 @@ The goal of BuildDispatch is to provide a production-style SaaS application that
 Create a `.env` file in the project root:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="your-postgresql-connection-string"
+AUTH_SECRET="your-auth-secret"
 SEED_DEMO_PASSWORD="your-demo-password"
 ```
 
-`DATABASE_URL` points Prisma to the local SQLite database.
+`DATABASE_URL` points Prisma to the PostgreSQL database.
+
+`AUTH_SECRET` is used by Auth.js to sign and protect session data.
 
 `SEED_DEMO_PASSWORD` is used only when generating local demo users with `npm run db:seed`. Do not commit real passwords or production secrets.
-
 
 ## Development
 
@@ -67,31 +86,43 @@ Install dependencies:
 ```bash
 npm install
 ```
-Run the development server:
+
+Generate Prisma Client:
 
 ```bash
-npm run dev
+npx prisma generate
 ```
-Run linting:
+
+Run database migrations:
 
 ```bash
-npm run lint
+npx prisma migrate dev
 ```
+
 Seed the local demo database:
 
 ```bash
 npm run db:seed
 ```
 
+Run the development server:
+
+```bash
+npm run dev
+```
+
+Run linting and tests:
+
+```bash
+npm run check
+```
 
 Open the app:
+
 ```text
 http://localhost:3000
 ```
 
-
 ## Project Status
 
-Foundation in progress.
-
-
+MVP deployed. Continued polish in progress.
