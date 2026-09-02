@@ -218,9 +218,12 @@ export default async function Home() {
                   ) : null}
 
                   {canManageWorkOrdersForUser ? (
-                    <button className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">
-                      Generate service report
-                    </button>
+                    <Link
+                        className="rounded-md border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
+                        href="/work-orders"
+                      >
+                        Generate service report
+                      </Link>
                   ) : null}
                 </div>
               )}
