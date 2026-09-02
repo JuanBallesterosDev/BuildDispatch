@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Priority, WorkOrderStatus } from "@/generated/prisma/enums";
 
 export async function getDashboardData(organizationId: string) {
-  const [organization, openToday, inProgress, urgentWorkOrders] =
+  const [organization, openToday, inProgress, urgentWorkOrders, completedWithoutReports] =
     await Promise.all([
       prisma.organization.findUnique({
         where: {
@@ -76,6 +76,15 @@ export async function getDashboardData(organizationId: string) {
           id: true,
         },
       }),
+      prisma.workOrder.count({
+        where: {
+          organizationId,
+          status: WorkOrderStatus.COMPLETED,
+          serviceReports: {
+            none: {},
+          },
+        },
+      }),
     ]);
 
   return {
@@ -84,6 +93,7 @@ export async function getDashboardData(organizationId: string) {
       openToday,
       inProgress,
       needsAttention: urgentWorkOrders.length,
+      reportsPending: completedWithoutReports,
     },
   };
 }
