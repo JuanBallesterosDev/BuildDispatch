@@ -197,7 +197,7 @@ export default async function WorkOrderDetailPage({
                 <input name="workOrderId" type="hidden" value={workOrder.id} />
 
                 <input
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                   className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
                   name="image"
                   type="file"

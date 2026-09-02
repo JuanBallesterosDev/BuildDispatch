@@ -343,10 +343,10 @@ export async function addPhotoEvidenceAction(formData: FormData) {
     throw new Error("Only image files can be uploaded.");
   }
 
-  const maxUploadSize = 5 * 1024 * 1024;
+  const maxUploadSize = 8 * 1024 * 1024;
 
   if (image.size > maxUploadSize) {
-    throw new Error("Image must be 5MB or smaller.");
+    throw new Error("Image must be 8MB or smaller.");
   }
 
   const workOrder = await prisma.workOrder.findFirst({
