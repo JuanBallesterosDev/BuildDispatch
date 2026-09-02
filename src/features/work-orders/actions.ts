@@ -9,6 +9,7 @@ import {
   canManageWorkOrders,
   canUpdateFieldWork,
 } from "@/features/auth/policies";
+import { cloudinary } from "@/lib/cloudinary";
 
 export type CreateWorkOrderState = {
   error?: string;
@@ -318,6 +319,61 @@ export async function generateServiceReportAction(formData: FormData) {
     data: {
       workOrderId,
       summary,
+    },
+  });
+
+  redirect(`/work-orders/${workOrderId}`);
+}
+export async function addPhotoEvidenceAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  if (!canUpdateFieldWork(context.role)) {
+    throw new Error("You do not have permission to add photo evidence.");
+  }
+
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+  const image = formData.get("image");
+  const caption = String(formData.get("caption") ?? "").trim();
+
+  if (!workOrderId || !(image instanceof File) || image.size === 0) {
+    throw new Error("Work order and image file are required.");
+  }
+
+  if (!image.type.startsWith("image/")) {
+    throw new Error("Only image files can be uploaded.");
+  }
+
+  const maxUploadSize = 5 * 1024 * 1024;
+
+  if (image.size > maxUploadSize) {
+    throw new Error("Image must be 5MB or smaller.");
+  }
+
+  const workOrder = await prisma.workOrder.findFirst({
+    where: {
+      id: workOrderId,
+      organizationId: context.organization.id,
+    },
+  });
+
+  if (!workOrder) {
+    throw new Error("Work order not found for this organization.");
+  }
+
+  const arrayBuffer = await image.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const base64Image = `data:${image.type};base64,${buffer.toString("base64")}`;
+
+  const uploadResult = await cloudinary.uploader.upload(base64Image, {
+    folder: `builddispatch/${context.organization.slug}/work-orders/${workOrderId}`,
+    resource_type: "image",
+  });
+
+  await prisma.photoEvidence.create({
+    data: {
+      workOrderId,
+      url: uploadResult.secure_url,
+      caption: caption || null,
     },
   });
 

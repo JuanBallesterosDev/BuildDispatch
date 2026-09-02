@@ -7,7 +7,7 @@ import {
   canUpdateFieldWork,
 } from "@/features/auth/policies";
 import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
-import { addFieldNoteAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction } from "@/features/work-orders/actions";
+import { addFieldNoteAction, addPhotoEvidenceAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -187,6 +187,64 @@ export default async function WorkOrderDetailPage({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold">Photo evidence</h2>
+
+            {canUpdateFieldWorkForUser ? (
+              <form action={addPhotoEvidenceAction} className="mt-4 space-y-3" encType="multipart/form-data">
+                <input name="workOrderId" type="hidden" value={workOrder.id} />
+
+                <input
+                  accept="image/*"
+                  className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                  name="image"
+                  type="file"
+                  required
+                />
+
+                <input
+                  className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                  name="caption"
+                  placeholder="Optional caption"
+                />
+
+                <button
+                  className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                  type="submit"
+                >
+                  Add photo
+                </button>
+              </form>
+            ) : null}
+
+            {workOrder.photoEvidence.length === 0 ? (
+              <p className="mt-3 text-sm text-slate-500">No photo evidence added yet.</p>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {workOrder.photoEvidence.map((photo) => (
+                  <a
+                    className="block overflow-hidden rounded-md border border-slate-200 bg-slate-50"
+                    href={photo.url}
+                    key={photo.id}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      alt={photo.caption ?? "Work order photo evidence"}
+                      className="h-40 w-full object-cover"
+                      src={photo.url}
+                    />
+                    <div className="p-3">
+                      <p className="text-sm text-slate-600">
+                        {photo.caption ?? "No caption"}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <aside className="space-y-6">
