@@ -102,6 +102,11 @@ export async function getWorkOrderById(
           createdAt: "desc",
         },
       },
+      photoEvidence: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 
