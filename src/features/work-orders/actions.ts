@@ -410,3 +410,39 @@ export async function addPhotoEvidenceAction(formData: FormData) {
 
   redirect(`/work-orders/${workOrderId}`);
 }
+export async function removePhotoEvidenceAction(formData: FormData) {
+  const context = await getCurrentUserContext();
+
+  if (!canUpdateFieldWork(context.role)) {
+    throw new Error("You do not have permission to remove photo evidence.");
+  }
+
+  const photoId = String(formData.get("photoId") ?? "");
+  const workOrderId = String(formData.get("workOrderId") ?? "");
+
+  if (!photoId || !workOrderId) {
+    throw new Error("Photo and work order are required.");
+  }
+
+  const photo = await prisma.photoEvidence.findFirst({
+    where: {
+      id: photoId,
+      workOrder: {
+        id: workOrderId,
+        organizationId: context.organization.id,
+      },
+    },
+  });
+
+  if (!photo) {
+    throw new Error("Photo evidence not found for this organization.");
+  }
+
+  await prisma.photoEvidence.delete({
+    where: {
+      id: photo.id,
+    },
+  });
+
+  redirect(`/work-orders/${workOrderId}`);
+}

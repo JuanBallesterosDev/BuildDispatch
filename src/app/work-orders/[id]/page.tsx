@@ -7,7 +7,7 @@ import {
   canUpdateFieldWork,
 } from "@/features/auth/policies";
 import { getWorkOrderById, getMaterialsForOrganization } from "@/features/work-orders/data";
-import { addFieldNoteAction, addPhotoEvidenceAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction } from "@/features/work-orders/actions";
+import { addFieldNoteAction, addPhotoEvidenceAction, logMaterialUsageAction, completeWorkOrderAction, generateServiceReportAction, removePhotoEvidenceAction, } from "@/features/work-orders/actions";
 
 type WorkOrderDetailPageProps = {
   params: Promise<{
@@ -224,24 +224,35 @@ export default async function WorkOrderDetailPage({
             ) : (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {workOrder.photoEvidence.map((photo) => (
-                  <a
-                    className="block overflow-hidden rounded-md border border-slate-200 bg-slate-50"
-                    href={photo.url}
+                  <div
+                    className="overflow-hidden rounded-md border border-slate-200 bg-slate-50"
                     key={photo.id}
-                    target="_blank"
-                    rel="noreferrer"
                   >
-                    <img
-                      alt={photo.caption ?? "Work order photo evidence"}
-                      className="h-40 w-full object-cover"
-                      src={photo.url}
-                    />
+                    <a href={photo.url} target="_blank" rel="noreferrer">
+                      <img
+                        alt={photo.caption ?? "Work order photo evidence"}
+                        className="h-40 w-full object-cover"
+                        src={photo.url}
+                      />
+                    </a>
+
                     <div className="p-3">
-                      <p className="text-sm text-slate-600">
-                        {photo.caption ?? "No caption"}
-                      </p>
+                      <p className="text-sm text-slate-600">{photo.caption ?? "No caption"}</p>
+
+                      {canUpdateFieldWorkForUser ? (
+                        <form action={removePhotoEvidenceAction} className="mt-3">
+                          <input name="photoId" type="hidden" value={photo.id} />
+                          <input name="workOrderId" type="hidden" value={workOrder.id} />
+                          <button
+                            className="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50"
+                            type="submit"
+                          >
+                            Remove photo
+                          </button>
+                        </form>
+                      ) : null}
                     </div>
-                  </a>
+                  </div>
                 ))}
               </div>
             )}
