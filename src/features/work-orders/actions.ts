@@ -324,6 +324,35 @@ export async function generateServiceReportAction(formData: FormData) {
 
   redirect(`/work-orders/${workOrderId}`);
 }
+function getImageMimeType(file: File) {
+  if (file.type.startsWith("image/")) {
+    return file.type;
+  }
+
+  const fileName = file.name.toLowerCase();
+
+  if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+    return "image/jpeg";
+  }
+
+  if (fileName.endsWith(".png")) {
+    return "image/png";
+  }
+
+  if (fileName.endsWith(".webp")) {
+    return "image/webp";
+  }
+
+  if (fileName.endsWith(".heic")) {
+    return "image/heic";
+  }
+
+  if (fileName.endsWith(".heif")) {
+    return "image/heif";
+  }
+
+  return null;
+}
 export async function addPhotoEvidenceAction(formData: FormData) {
   const context = await getCurrentUserContext();
 
@@ -339,7 +368,9 @@ export async function addPhotoEvidenceAction(formData: FormData) {
     throw new Error("Work order and image file are required.");
   }
 
-  if (!image.type.startsWith("image/")) {
+  const mimeType = getImageMimeType(image);
+
+  if (!mimeType) {
     throw new Error("Only image files can be uploaded.");
   }
 
@@ -362,7 +393,7 @@ export async function addPhotoEvidenceAction(formData: FormData) {
 
   const arrayBuffer = await image.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const base64Image = `data:${image.type};base64,${buffer.toString("base64")}`;
+  const base64Image = `data:${mimeType};base64,${buffer.toString("base64")}`;
 
   const uploadResult = await cloudinary.uploader.upload(base64Image, {
     folder: `builddispatch/${context.organization.slug}/work-orders/${workOrderId}`,
