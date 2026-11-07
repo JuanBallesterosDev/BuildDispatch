@@ -270,6 +270,11 @@ export async function generateServiceReportAction(formData: FormData) {
           material: true,
         },
       },
+      photoEvidence: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     },
   });
 
@@ -297,6 +302,13 @@ export async function generateServiceReportAction(formData: FormData) {
           )
           .join("\n")
       : "No materials were logged for this work order.";
+      
+  const photosSummary =
+  workOrder.photoEvidence.length > 0
+    ? `${workOrder.photoEvidence.length} photo evidence item${
+        workOrder.photoEvidence.length === 1 ? "" : "s"
+      } attached to this work order.`
+    : "No photo evidence was recorded.";
 
   const summary = [
     `Service Report: ${workOrder.title}`,
@@ -313,6 +325,9 @@ export async function generateServiceReportAction(formData: FormData) {
     "",
     "Materials Used:",
     materialsSummary,
+    "",
+    "Photo Evidence:",
+    photosSummary,
   ].join("\n");
 
   await prisma.serviceReport.create({

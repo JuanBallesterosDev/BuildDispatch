@@ -1,5 +1,6 @@
 import {
   Document,
+  Image,
   Page,
   StyleSheet,
   Text,
@@ -43,6 +44,10 @@ type ServiceReportPdfProps = {
     serviceReports: {
       summary: string;
       createdAt: Date;
+    }[];
+    photoEvidence: {
+      url: string;
+      caption: string | null;
     }[];
   };
 };
@@ -104,6 +109,26 @@ const styles = StyleSheet.create({
   noteMeta: {
     marginTop: 4,
     color: "#64748b",
+    fontSize: 9,
+  },
+  photoGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  photoCard: {
+    width: "48%",
+    marginBottom: 10,
+  },
+  photo: {
+    width: "100%",
+    height: 140,
+    objectFit: "cover",
+    borderRadius: 4,
+  },
+  photoCaption: {
+    marginTop: 4,
+    color: "#475569",
     fontSize: 9,
   },
 });
@@ -198,6 +223,25 @@ export function ServiceReportPdf({ workOrder }: ServiceReportPdfProps) {
                 {usage.quantity} {usage.material.unit} · {usage.material.name}
               </Text>
             ))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Photo Evidence</Text>
+
+          {workOrder.photoEvidence.length === 0 ? (
+            <Text>No photo evidence recorded.</Text>
+          ) : (
+            <View style={styles.photoGrid}>
+              {workOrder.photoEvidence.map((photo, index) => (
+                <View style={styles.photoCard} key={`${photo.url}-${index}`}>
+                  <Image src={photo.url} style={styles.photo} />
+                  <Text style={styles.photoCaption}>
+                    {photo.caption ?? "Work order photo evidence"}
+                  </Text>
+                </View>
+              ))}
+            </View>
           )}
         </View>
 
